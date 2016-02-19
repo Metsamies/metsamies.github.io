@@ -3,26 +3,28 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <body>
 
-<p>Laskuri hyökkääjän turnausareenan tason selvittämiseksi</p>
+<p>Laskuri hyokkaajan turnausareenan tason selvittamiseksi</p>
 
 <div ng-app="myApp" ng-controller="namesCtrl">
-  <p><input type="number" ng-model="kohde_X"><input type="number" ng-model="kohde_Y">  Hyökkääjä X|Y</p>
+  <p><input type="number" ng-model="kohde_X"><input type="number" ng-model="kohde_Y">  Hyokkaaja X|Y</p>
   <p><input type="number" ng-model="koti_X"><input type="number" ng-model="koti_Y">  Kohde X|Y</p>
-  <p><input type="number" ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengät *1.5, une/pienet kengät *2. Esim fix unekengät = 2*2 = 4. ) </p>
-  <p><input type="number" ng-model="kengat" ng-init="kengat=0.00"> Kengät (0, 0.25, 0.5, 0.75) (Katso vihun sankarin kuvasta)</p>
+  <p><input type="number" ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengat *1.5, une/pienet kengat *2. Esim fix unekengat = 2*2 = 4. ) </p>
+  <p><input type="number" ng-model="kengat" ng-init="kengat=0.00"> Kengat (0, 0.25, 0.5, 0.75) (Katso vihun sankarin kuvasta)</p>
 
-  <p> ETÄISYYS ON: {{ (Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))).toFixed(2) }} RUUTUA. JOS ETÄISYYS ON ALLE 20 RUUTUA, TA-TASOA EI VOI SELVITTÄÄ, EIKÄ TÄMÄ TAULUKKO PÄDE </p>
+  <p> ETAISYYS ON: {{ (Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))).toFixed(2) }} RUUTUA. JOS ETAISYYS ON ALLE 20 RUUTUA, TA-TASOA EI VOI SELVITTAA, EIKA TAMA TAULUKKO PADE </p>
   <p> </p>
-  <p> <input type="datetime-local" ng-model="aika" ng-init="aika=2015-02-30T21:00:00" /> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-01-05T21:00:05"</p>
-  <p> Päivämäärä näkyy tässä, mikäli syötetty oikein: {{osuma(aika,'2') | date:'dd.M HH:mm:ss'}} </p>
+  <p> <input type="datetime-local" ng-model="aika" ng-init="aika=2015-02-30T21:00:00" /> Syota osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-01-05T21:00:05"</p>
+  <p> Paivamaara nakyy tassa, mikali syotetty oikein: {{osuma(aika,'2') | date:'dd.M HH:mm:ss'}} </p>
   
 <table border="1" width="100%">
 <tr>
 <th ng-click="orderByMe('name')">Nopeus</th>
+<th ng-click="orderByMe('name')">Yksikot</th>
 <th ng-repeat="y in ajat | orderBy:myOrderBy"> TA{{y.areena}}</th>
 </tr>
 <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
 <td>{{x.name}}</td>
+<td>{{x.unit}}</td>
 <td ng-repeat="ta in ajat | orderBy:myOrderBy"> {{osuma(aika,(20/(x.name*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.name*fakti)*(1+ta.areena/10+kengat))))) | date:'dd.M HH:mm:ss'}} </td>
 </tr>
 </table>
@@ -47,26 +49,18 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
     }
     
     $scope.yksikot = [
-        {name:'1',country:'Norway'},
-        {name:'2',country:'Sweden'},
-        {name:'3',country:'England'},
-        {name:'4',country:'Norway'},
-        {name:'5',country:'Denmark'},
-        {name:'6',country:'Sweden'},
-        {name:'7',country:'Denmark'},
-        {name:'8',country:'England'},
-        {name:'9',country:'Norway'},
-        {name:'10',country:'Norway'},
-        {name:'11',country:'Norway'},
-        {name:'12',country:'Sweden'},
-        {name:'13',country:'England'},
-        {name:'14',country:'Norway'},
-        {name:'15',country:'Denmark'},
-        {name:'16',country:'Sweden'},
-        {name:'17',country:'Denmark'},
-        {name:'18',country:'England'},
-        {name:'19',country:'Norway'},
-        {name:'20',country:'Norway'}
+        {name:'3',unit:'Pultit'},
+        {name:'4',unit:'Murtaja, Sena, T-Passi'},
+        {name:'5',unit:'Preto, G-Passi'},
+        {name:'6',unit:'Leego, Miekka, Kirves'},
+        {name:'7',unit:'Imppi, Fala, Nuija, Keihäs'},
+        {name:'9',unit:'T-Tiekku, Ritari'},
+        {name:'10',unit:'EC, Pala'},
+        {name:'13',unit:'Heedu'},
+        {name:'14',unit:'EI'},
+        {name:'16',unit:'Druidi'},
+        {name:'17',unit:'G-Tiekku'},
+        {name:'19',unit:'Salama'},
         ];
     $scope.orderByMe = function(x) {
         $scope.myOrderBy = x;
