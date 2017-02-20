@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <meta charset="utf-8" />
 
 <head>
@@ -25,34 +25,42 @@ th {
 
 tr:nth-child(even){background-color: #f2f2f2}
 
+tr:hover{
+  background-color: lightgreen;
+}
+
+td:hover{
+  background-color: green;
+}
+
 </style>
 
 <html>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
 <body>
- 
+
 <p style="font-size:130%;"><b>Laskuri hyökkääjän turnausareenan tason selvittämiseksi</b><br> <span class="pieni"> Palaute Metsamies @Qnet </span></p>
 <div ng-app="myApp" ng-controller="namesCtrl">
-  <p><input type="number"  ng-model="kohde_X"><input type="number" ng-model="kohde_Y">  Hyökkääjä X|Y</p>
-  <p><input type="number" ng-model="koti_X"><input type="number" ng-model="koti_Y">  Kohde X|Y</p>
-  <p><input type="number"  ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengät *1.5, une/pienet kengät *2. Esim fix unekengät = 2*2 = 4. ) </p>
-  <p><input type="number" ng-model="kengat" ng-init="kengat=0.00"> Kengät (0, 25, 50, 75) Lopussa myös pikalaskelmat pultti+ramivauhdeille kenkien kanssa.</p>
- 
+  <input type="number" style="width:50px" ng-model="kohde_X"/><input type="number"  style="width:50px" ng-model="kohde_Y"/>  <span>Hyökkääjä X|Y</span>
+  <p><input type="number"  style="width:50px" ng-model="koti_X"><input type="number"  style="width:50px" ng-model="koti_Y">  Kohde X|Y</p>
+  <p><input type="number"  style="width:50px" ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengät *1.5, une/pienet kengät *2. Esim fix unekengät = 2*2 = 4. ) </p>
+  <p><input type="number" style="width:50px" ui-date ng-model="kengat" ng-init="kengat=0.00"> Kengät (0, 25, 50, 75) Lopussa myös pikalaskelmat pultti+ramivauhdeille kenkien kanssa.</p>
+
   <p> ETÄISYYS ON: {{ (Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))).toFixed(2) }} RUUTUA. JOS ETÄISYYS ON ALLE 20 RUUTUA, TA-TASOA EI VOI SELVITTÄÄ, EIKÄ TÄMÄ TAULUKKO PÄDE </p>
   <p> </p>
-  <p> <input type="datetime-local"  step="1" ng-model="aika" ng-init="aika=2015-02-30T21:00:00" /> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-02-30T21:00:00" (Chromella dd.MM.yyyy hh:mm:ss, esim "30.02.2015 21:00:00") </p>
+  <p> <input type="datetime-local"  step="1" ng-model="aika" defaultvalue="2015-02-30" ng-init="aika=2015-02-30T21:00:00" /> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-02-30T21:00:00" tai selaimesi pyytämällä tavalla. </p>
     <p> <input type="datetime-local"  step="1" ng-model="ekamahd" ng-init="aika=2015-02-30T21:00:00" /><input type="datetime-local" step="1" ng-model="vikamahd" ng-init="aika=2015-02-30T21:00:00" /> Ensimmäinen ja viimeinen mahdollinen lähetysaika. Syötettyyn väliin osuvat lähtöajat värjäytyvät <span style="background-color:indianred;">punaisella</span> , ja max 5min alle alarajan värjäytyvät <span style="background-color:lightblue;">sinisellä</span> .</p>
   <p> Päivämäärä näkyy tässä, mikäli syötetty oikein: {{osuma(aika,'0') | date:'dd.M HH:mm:ss'}} </p>
-  <p> 
+  <p>
   <form action="" >
-  Piilota välille osumattomat ajat: 
+  Piilota välille osumattomat ajat:
   <input type="radio" ng-model="piilotus" value="1" > Kylla
   <input type="radio" ng-model="piilotus" value="0"> Ei
 </form> </p>
- 
+
  <div ng-switch="piilotus">
   <div ng-switch-when="1">
- 
+
         <table border="1" width="100%">
         <tr>
         <th ng-click="orderByMe('name')">Nopeus</th>
@@ -73,8 +81,8 @@ tr:nth-child(even){background-color: #f2f2f2}
 
         </table>
     </div>
-    
-    
+
+
 <div ng-switch-when="0">
       <table border="1" width="100%">
         <tr>
@@ -95,21 +103,28 @@ tr:nth-child(even){background-color: #f2f2f2}
         </tr>
 
         </table>
-</div>  
-    
-    
-   </div>   
+</div>
+
+
+   </div>
   </div>
 <script>
 angular.module('myApp', []).controller('namesCtrl', function($scope) {
     //$scope.fakti = "1"
+
     $scope.piilotus = "1"
-    
+    $scope.HXLen = "4"
+
+    var nyt = (Math.round(Date.now()/1000/60) - 5)*1000*60
+    $scope.aika = new Date((Math.round(Date.now()/1000/60/60/24)*24+34)*60*60*1000)
+    $scope.ekamahd = new Date((Math.round(Date.now()/1000/60) - 20)*1000*60)
+    $scope.vikamahd = new Date((Math.round(Date.now()/1000)*1000))
+
     $scope.Math = window.Math;
     $scope.erotus = function(alku, loppu){
       return alku+loppu;
     }
-    
+
     $scope.osuma = function(aika, matka) {
       //var pvm = new Date(aika).getTime();
       var ms = matka * 60 * 60 * 1000;
@@ -117,7 +132,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
       //lahto = pvm - ms;
       return new Date(aika.getTime() - ms)
     }
-    
+
     $scope.osumaa = function(aika, matka) {
       //var pvm = new Date(aika).getTime();
       var ms = matka * 60 * 60 * 1000;
@@ -126,9 +141,9 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
       }
       return "-"
       //lahto = pvm - ms;
-      
+
     }
-    
+
     $scope.valiinvain = function(osuma, eka, vika, piilo) {
       //var pvm = new Date(aika).getTime();
       //var ms = matka * 60 * 60 * 1000;
@@ -148,7 +163,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
       }
       return { color: "black"}
     }
-    
+
     $scope.valiin = function(osuma, eka, vika, piilo) {
       //var pvm = new Date(aika).getTime();
       //var ms = matka * 60 * 60 * 1000;
@@ -168,7 +183,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
       }
       return { color: "black"}
     }
-    
+
     $scope.yksikot = [
         {name:'3',unit:'Pultit'},
         {name:'4',unit:'Murtaja, Sena, T-Pässi'},
@@ -186,7 +201,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
     $scope.orderByMe = function(x) {
         $scope.myOrderBy = x;
     }
-    
+
     $scope.kengatt = [
         {nop:3,nimi:'Kivi+25%-kengat',kenka:0.25},
         {nop:3,nimi:'Kivi+50%-kengat',kenka:0.50},
