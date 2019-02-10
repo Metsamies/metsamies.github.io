@@ -41,13 +41,15 @@ td:hover{
 
 <p style="font-size:130%;"><b>Laskuri hyökkääjän turnausareenan tason selvittämiseksi</b><br> <span class="pieni"> Palaute Metsamies @Qnet </span></p>
 <div ng-app="myApp" ng-controller="namesCtrl">
-  <input type="number" style="width:50px" ng-model="kohde_X"/><input type="number"  style="width:50px" ng-model="kohde_Y"/>  <span>Hyökkääjä X|Y</span>
+  <input type="number" style="width:60px" ng-model="kartanLeveys"/><span>Kartan leveys</span>
+  <p><input type="number" style="width:50px" ng-model="kohde_X"/><input type="number"  style="width:50px" ng-model="kohde_Y"/>  <span>Hyökkääjä X|Y</span></p>
   <p><input type="number"  style="width:50px" ng-model="koti_X"><input type="number"  style="width:50px" ng-model="koti_Y">  Kohde X|Y</p>
   <p><input type="number"  style="width:50px" ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengät *1.5, une/pienet kengät *2. Esim fix unekengät = 2*2 = 4. ) </p>
   <p><input type="number" style="width:50px" ui-date ng-model="kengat" ng-init="kengat=0.00"> Kengät (0, 25, 50, 75) Lopussa myös pikalaskelmat pultti+ramivauhdeille kenkien kanssa.</p>
 
-  <p> ETÄISYYS ON: {{ (Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))).toFixed(2) }} RUUTUA. JOS ETÄISYYS ON ALLE 20 RUUTUA, TA-TASOA EI VOI SELVITTÄÄ, EIKÄ TÄMÄ TAULUKKO PÄDE </p>
-  <p> </p>
+
+  <p> ETÄISYYS ON: {{ etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys).toFixed(2) }} RUUTUA. </p>
+<p> </p>
   <p> <input type="datetime-local"  step="1" ng-model="aika" defaultvalue="2015-02-30" ng-init="aika=2015-02-30T21:00:00" /> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-02-30T21:00:00" tai selaimesi pyytämällä tavalla. </p>
     <p> <input type="datetime-local"  step="1" ng-model="ekamahd" ng-init="aika=2015-02-30T21:00:00" /><input type="datetime-local" step="1" ng-model="vikamahd" ng-init="aika=2015-02-30T21:00:00" /> Ensimmäinen ja viimeinen mahdollinen lähetysaika. Syötettyyn väliin osuvat lähtöajat värjäytyvät <span style="background-color:indianred;">punaisella</span> , ja max 5min alle alarajan värjäytyvät <span style="background-color:lightblue;">sinisellä</span> .</p>
   <p> Päivämäärä näkyy tässä, mikäli syötetty oikein: {{osuma(aika,'0') | date:'dd.M HH:mm:ss'}} </p>
@@ -70,13 +72,13 @@ td:hover{
         <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
         <td>{{x.name}}</td>
         <td>{{x.unit}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika,(20/(x.name*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.name*fakti)*(1+ta.areena/10+kengat))))),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,(20/(x.name*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.name*fakti)*(1+ta.areena/10+kengat))))) | date:'dd.M HH:mm:ss'}}</td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.name, fakti, ta.areena, kengat),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
         </tr>
 
         <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
         <td>{{x.nop}}</td>
         <td>{{x.nimi}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika,(20/(x.nop*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.nop*fakti)*(1+ta.areena/10+x.kenka))))),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,(20/(x.nop*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.nop*fakti)*(1+ta.areena/10+x.kenka))))) | date:'dd.M HH:mm:ss'}} </td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika, matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.nop, fakti, ta.areena, x.kenka),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
         </tr>
 
         </table>
@@ -93,13 +95,13 @@ td:hover{
         <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
         <td>{{x.name}}</td>
         <td>{{x.unit}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,(20/(x.name*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.name*fakti)*(1+ta.areena/10+kengat))))),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'1')"> {{osumaa(aika,(20/(x.name*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.name*fakti)*(1+ta.areena/10+kengat))))) | date:'dd.M HH:mm:ss'}} </td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.name, fakti, ta.areena, kengat),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
         </tr>
 
         <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
         <td>{{x.nop}}</td>
         <td>{{x.nimi}}</td>
-        <td style="font-size:78%;"  ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,(20/(x.nop*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.nop*fakti)*(1+ta.areena/10+x.kenka))))),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'1')"> {{osumaa(aika,(20/(x.nop*fakti) + Math.abs((Math.sqrt((koti_X-kohde_X)*(koti_X-kohde_X)+(koti_Y-kohde_Y)*(koti_Y-kohde_Y))-20) / ((x.nop*fakti)*(1+ta.areena/10+x.kenka))))) | date:'dd.M HH:mm:ss'}} </td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika, matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.nop, fakti, ta.areena, x.kenka),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
         </tr>
 
         </table>
@@ -110,6 +112,7 @@ td:hover{
   </div>
 <script>
 angular.module('myApp', []).controller('namesCtrl', function($scope) {
+    $scope.kartanLeveys = 401;
     //$scope.fakti = "1"
 
     $scope.piilotus = "1"
@@ -121,6 +124,29 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
     $scope.vikamahd = new Date((Math.round(Date.now()/1000)*1000))
 
     $scope.Math = window.Math;
+
+    $scope.etaisyys = function(kx1, ky1, kx2, ky2, kartanSivu) {
+      const x1 = kx1 || 0;
+      const x2 = kx2 || 0;
+      const y1 = ky1 || 0;
+      const y2 = ky2 || 0;
+      const sivunLeveys = kartanSivu || 401;
+      const xEtaisyys = Math.min(Math.abs(x1-x2), sivunLeveys - Math.abs(x1-x2));
+      const yEtaisyys = Math.min(Math.abs(y1-y2), sivunLeveys - Math.abs(y1-y2));
+      return Math.sqrt(Math.pow(xEtaisyys, 2) + Math.pow(yEtaisyys, 2) );
+    }
+
+    $scope.matkaAika = function(etaisyys, nopeus, fakti, ta, kengat) {
+      const perusNopeus = nopeus*fakti;
+      const taNopeus = (nopeus*fakti)*(1+ta/10+kengat);
+
+      if (etaisyys > 20) {
+        return 20/perusNopeus + (etaisyys-20)/taNopeus;
+      } else {
+        return etaisyys/perusNopeus;
+      }
+    }
+
     $scope.erotus = function(alku, loppu){
       return alku+loppu;
     }
