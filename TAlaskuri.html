@@ -50,8 +50,8 @@ td:hover{
 
   <p> ETÄISYYS ON: {{ etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys).toFixed(2) }} RUUTUA. </p>
 <p> </p>
-  <p> <input type="datetime-local"  step="1" ng-model="aika" defaultvalue="2015-02-30" ng-init="aika=2015-02-30T21:00:00" /> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-02-30T21:00:00" tai selaimesi pyytämällä tavalla. </p>
-    <p> <input type="datetime-local"  step="1" ng-model="ekamahd" ng-init="aika=2015-02-30T21:00:00" /><input type="datetime-local" step="1" ng-model="vikamahd" ng-init="aika=2015-02-30T21:00:00" /> Ensimmäinen ja viimeinen mahdollinen lähetysaika. Syötettyyn väliin osuvat lähtöajat värjäytyvät <span style="background-color:indianred;">punaisella</span> , ja max 5min alle alarajan värjäytyvät <span style="background-color:lightblue;">sinisellä</span> .</p>
+  <p> <input type="datetime-local" step="1" ng-model="aika"/> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-02-30T21:00:00" tai selaimesi pyytämällä tavalla. </p>
+    <p> <input type="datetime-local" step="1" ng-model="ekamahd"/><input type="datetime-local" step="1" ng-model="vikamahd" /> Ensimmäinen ja viimeinen mahdollinen lähetysaika. Syötettyyn väliin osuvat lähtöajat värjäytyvät <span style="background-color:indianred;">punaisella</span> , ja max 5min alle alarajan värjäytyvät <span style="background-color:lightblue;">sinisellä</span> .</p>
   <p> Päivämäärä näkyy tässä, mikäli syötetty oikein: {{osuma(aika,'0') | date:'dd.M HH:mm:ss'}} </p>
   <p>
   <form action="" >
