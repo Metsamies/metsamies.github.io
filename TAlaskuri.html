@@ -48,7 +48,7 @@ td:hover{
   <p><input type="number" style="width:50px" ui-date ng-model="kengat" ng-init="kengat=0.00"> Kengät (0, 25, 50, 75) Lopussa myös pikalaskelmat pultti+ramivauhdeille kenkien kanssa.</p>
 
 
-  <p> ETÄISYYS ON: {{ etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys).toFixed(2) }} RUUTUA. </p>
+  <p> ETÄISYYS ON: {{ getDistance().toFixed(2) }} RUUTUA. </p>
 <p> </p>
   <p> <input type="datetime-local" step="1" ng-model="aika"/> Syötä osuma-aika muodossa yyyy-MM-ddThh:mm:ss, esim "2015-02-30T21:00:00" tai selaimesi pyytämällä tavalla. </p>
     <p> <input type="datetime-local" step="1" ng-model="ekamahd"/><input type="datetime-local" step="1" ng-model="vikamahd" /> Ensimmäinen ja viimeinen mahdollinen lähetysaika. Syötettyyn väliin osuvat lähtöajat värjäytyvät <span style="background-color:indianred;">punaisella</span> , ja max 5min alle alarajan värjäytyvät <span style="background-color:lightblue;">sinisellä</span> .</p>
@@ -72,18 +72,18 @@ td:hover{
         <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
         <td>{{x.name}}</td>
         <td>{{x.unit}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.name, fakti, ta.areena, kengat),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
         </tr>
 
         <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
         <td>{{x.nop}}</td>
         <td>{{x.nimi}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika, matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.nop, fakti, ta.areena, x.kenka),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
         </tr>
 
         </table>
     </div>
-
+    
 
 <div ng-switch-when="0">
       <table border="1" width="100%">
@@ -95,13 +95,13 @@ td:hover{
         <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
         <td>{{x.name}}</td>
         <td>{{x.unit}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.name, fakti, ta.areena, kengat),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd, 0),osuma(vikamahd, 0), 0)"> {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
         </tr>
 
         <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
         <td>{{x.nop}}</td>
         <td>{{x.nimi}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika, matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y, kartanLeveys)), x.nop, fakti, ta.areena, x.kenka),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(etaisyys(koti_X, koti_Y, kohde_X, kohde_Y), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
+        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd, 0),osuma(vikamahd, 0),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
         </tr>
 
         </table>
@@ -117,6 +117,11 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
 
     $scope.piilotus = "1"
     $scope.HXLen = "4"
+    $scope.koti_X = 0;
+    $scope.koti_Y = 0;
+    $scope.kohde_X = 0;
+    $scope.kohde_Y = 0;
+
 
     var nyt = (Math.round(Date.now()/1000/60) - 5)*1000*60
     $scope.aika = new Date((Math.round(Date.now()/1000/60/60/24)*24+34)*60*60*1000)
@@ -136,45 +141,53 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
       return Math.sqrt(Math.pow(xEtaisyys, 2) + Math.pow(yEtaisyys, 2) );
     }
 
+    $scope.getDistance = function() {
+      const x1 = $scope.koti_X || 0;
+      const y1 = $scope.koti_Y || 0;
+      const x2 = $scope.kohde_X || 0;
+      const y2 = $scope.kohde_Y || 0;
+
+      const sivunLeveys = $scope.kartanLeveys || 401;
+      const xEtaisyys = Math.min(Math.abs(x1-x2), sivunLeveys - Math.abs(x1-x2));
+      const yEtaisyys = Math.min(Math.abs(y1-y2), sivunLeveys - Math.abs(y1-y2));
+      return Math.sqrt(Math.pow(xEtaisyys, 2) + Math.pow(yEtaisyys, 2) );
+    }
+
     $scope.matkaAika = function(etaisyys, nopeus, fakti, ta, kengat) {
       const perusNopeus = nopeus*fakti;
       const taNopeus = (nopeus*fakti)*(1+ta/10+kengat);
+      let kesto = 0;
 
       if (etaisyys > 20) {
-        return 20/perusNopeus + (etaisyys-20)/taNopeus;
+        kesto = 20/perusNopeus + (etaisyys-20)/taNopeus;
       } else {
-        return etaisyys/perusNopeus;
+        kesto = etaisyys/perusNopeus;
       }
+
+      return kesto;
     }
 
     $scope.erotus = function(alku, loppu){
       return alku+loppu;
     }
 
-    $scope.osuma = function(aika, matka) {
-      //var pvm = new Date(aika).getTime();
+    $scope.osuma = function(aika, matka, kutsuja) {
       var ms = matka * 60 * 60 * 1000;
-
-      //lahto = pvm - ms;
-      return new Date(aika.getTime() - ms)
+      if ( angular.isDate(aika) ) {
+        return new Date(aika.getTime() - ms);
+      }
+      return "-"
     }
 
     $scope.osumaa = function(aika, matka) {
-      //var pvm = new Date(aika).getTime();
       var ms = matka * 60 * 60 * 1000;
       if ( angular.isDate(aika) ) {
         return new Date(aika.getTime() - ms)
       }
       return "-"
-      //lahto = pvm - ms;
-
     }
 
     $scope.valiinvain = function(osuma, eka, vika, piilo) {
-      //var pvm = new Date(aika).getTime();
-      //var ms = matka * 60 * 60 * 1000;
-      //
-      //lahto = pvm - ms;
       if ( osuma < vika ) {
           if ( osuma > eka ) {
             return { "background-color": "indianred", 'font-weight': 'bold'}
@@ -191,10 +204,8 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
     }
 
     $scope.valiin = function(osuma, eka, vika, piilo) {
-      //var pvm = new Date(aika).getTime();
-      //var ms = matka * 60 * 60 * 1000;
-      //
-      //lahto = pvm - ms;
+      // console.log(`valiin: (osuma: ${osuma}), (eka: ${eka}), (vika: ${vika}), (piilo: ${piilo}), `)
+
       if ( osuma < vika ) {
           if ( osuma > eka ) {
             return { "background-color": "indianred", 'font-weight': 'bold'}
@@ -211,18 +222,18 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
     }
 
     $scope.yksikot = [
-        {name:'3',unit:'Pultit'},
-        {name:'4',unit:'Murtaja, Sena, T-Pässi'},
-        {name:'5',unit:'Preto, G-Pässi'},
-        {name:'6',unit:'Leego, Miekka, Kirves'},
-        {name:'7',unit:'Imppi, Fala, Nuija, Keihäs'},
-        {name:'9',unit:'T-Tiekku, Ritari'},
-        {name:'10',unit:'EC, Pala'},
-        {name:'13',unit:'Heedu'},
-        {name:'14',unit:'EI'},
-        {name:'16',unit:'Druidi, Legati'},
-        {name:'17',unit:'Tunnustelija'},
-        {name:'19',unit:'Salama'},
+        {name:3, unit:'Pultit'},
+        {name:4, unit:'Murtaja, Sena, T-Pässi'},
+        {name:5, unit:'Preto, G-Pässi'},
+        {name:6, unit:'Leego, Miekka, Kirves'},
+        {name:7, unit:'Imppi, Fala, Nuija, Keihäs'},
+        {name:9, unit:'T-Tiekku, Ritari'},
+        {name:10, unit:'EC, Pala'},
+        {name:13, unit:'Heedu'},
+        {name:14, unit:'EI'},
+        {name:16, unit:'Druidi, Legati'},
+        {name:17, unit:'Tunnustelija'},
+        {name:19, unit:'Salama'},
         ];
     $scope.orderByMe = function(x) {
         $scope.myOrderBy = x;
