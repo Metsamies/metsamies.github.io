@@ -42,9 +42,15 @@ td:hover{
 <p style="font-size:130%;"><b>Laskuri hyökkääjän turnausareenan tason selvittämiseksi</b><br> <span class="pieni"> Palaute Metsamies @Qnet </span></p>
 <div ng-app="myApp" ng-controller="namesCtrl">
   <input type="number" style="width:60px" ng-model="kartanLeveys"/><span>Kartan leveys</span>
+  <form action="" >
+    Turnausareenan nopeus per taso
+    <input type="radio" ng-model="taBuusti" value="10" > 10%
+    <input type="radio" ng-model="taBuusti" value="5"> 20%
+  </form> </p>
+
   <p><input type="number" style="width:50px" ng-model="kohde_X"/><input type="number"  style="width:50px" ng-model="kohde_Y"/>  <span>Hyökkääjä X|Y</span></p>
-  <p><input type="number"  style="width:50px" ng-model="koti_X"><input type="number"  style="width:50px" ng-model="koti_Y">  Kohde X|Y</p>
-  <p><input type="number"  style="width:50px" ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengät *1.5, une/pienet kengät *2. Esim fix unekengät = 2*2 = 4. ) </p>
+  <p><input type="number" style="width:50px" ng-model="koti_X"><input type="number"  style="width:50px" ng-model="koti_Y">  Kohde X|Y</p>
+  <p><input type="number" style="width:50px" ng-model="fakti" ng-init="fakti=1"> Fakti/serverkerroin ( normal=1, speed=2, tilikengät *1.5, une/pienet kengät *2. Esim fix unekengät = 2*2 = 4. ) </p>
   <p><input type="number" style="width:50px" ui-date ng-model="kengat" ng-init="kengat=0.00"> Kengät (0, 25, 50, 75) Lopussa myös pikalaskelmat pultti+ramivauhdeille kenkien kanssa.</p>
 
 
@@ -121,7 +127,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
     $scope.koti_Y = 0;
     $scope.kohde_X = 0;
     $scope.kohde_Y = 0;
-
+    $scope.taBuusti = 10;
 
     var nyt = (Math.round(Date.now()/1000/60) - 5)*1000*60
     $scope.aika = new Date((Math.round(Date.now()/1000/60/60/24)*24+34)*60*60*1000)
@@ -155,7 +161,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
 
     $scope.matkaAika = function(etaisyys, nopeus, fakti, ta, kengat) {
       const perusNopeus = nopeus*fakti;
-      const taNopeus = (nopeus*fakti)*(1+ta/10+kengat);
+      const taNopeus = (nopeus*fakti)*(1+$scope.taBuusti/10+kengat);
       let kesto = 0;
 
       if (etaisyys > 20) {
