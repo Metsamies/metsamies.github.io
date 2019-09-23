@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+
+<head>
+<title>TA-Laskuri by Metsamies</title>
+</head>
+
+<style>
+.pieni { font-size:50%; }
+
+table {
+    border-collapse: collapse;
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
+th {
+    background-color: grey;
+    color: black;
+}
+
+.Punainen { color:red; }
+
+tr:nth-child(even){background-color: #f2f2f2}
+
+tr:hover{
+  background-color: lightgreen;
+}
+
+td:hover{
+  background-color: green;
+}
+
+</style>
+
+<html>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js"></script>
+<body>
+
+<p style="font-size:130%;"><b>Calculator for figuring out enemy TS</b><br> <span class="pieni"> Feedback Metsamies @Qnet </span></p>
+<div ng-app="myApp" ng-controller="namesCtrl">
+  <input type="number" style="width:60px" ng-model="kartanLeveys"/><span>Map width</span>
+  <form action="" >
+    Tournament square bonus per level
+    <input type="radio" ng-model="taBuusti" value="0.1" > 10%
+    <input type="radio" ng-model="taBuusti" value="0.2"> 20%
+  </form> </p>
+
+  <p><input type="number" style="width:50px" ng-model="kohde_X"/><input type="number"  style="width:50px" ng-model="kohde_Y"/>  <span>Attacker X|Y</span></p>
+  <p><input type="number" style="width:50px" ng-model="koti_X"><input type="number"  style="width:50px" ng-model="koti_Y">  Target X|Y</p>
+  <p><input type="number" style="width:50px" ng-model="fakti" ng-init="fakti=1"> Artefact/server speed ( normal=1, speed=2, account boots *1.5, uniq/small boots *2) </p>
+  <p><input type="number" style="width:50px" ui-date ng-model="kengat" ng-init="kengat=0.00"> Boots (0, 25, 50, 75)</p>
+
+  <p> Distance is: {{ getDistance().toFixed(2) }} squares. </p>
+<p> </p>
+  <p> <input type="datetime-local" step="1" ng-model="aika"/> Arrival in format yyyy-MM-ddThh:mm:ss, e.g. "2015-02-30T21:00:00" or in format suggested by your browser </p>
+    <p> <input type="datetime-local" step="1" ng-model="ekamahd"/><input type="datetime-local" step="1" ng-model="vikamahd" /> First and last possible departure time. Departure times between first and last are shown as <span style="background-color:indianred;">red</span> and those less than 5 mins before first possible are shown as <span style="background-color:lightblue;">blue</span> .</p>
+  <p> Date will show here if calculator understands it: {{osuma(aika,'0') | date:'dd.M HH:mm:ss'}} </p>
+  <p>
+  <form action="" >
+  Hide departures outside of given timespan:
+  <input type="radio" ng-model="piilotus" value="1" > Yes
+  <input type="radio" ng-model="piilotus" value="0"> No
+</form> </p>
+
+ <div ng-switch="piilotus">
+  <div ng-switch-when="1">
+
+        <table border="1" width="100%">
+        <tr>
+          <th ng-click="orderByMe('name')">Speed</th>
+          <th ng-click="orderByMe('name')">Units</th>
+          <th ng-repeat="y in ajat | orderBy:myOrderBy"> TS{{y.areena}}</th>
+        </tr>
+        <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
+          <td>{{x.name}}</td>
+          <td>{{x.unit}}</td>
+          <td style="font-size:78%;" 
+            ng-repeat="ta in ajat | orderBy:myOrderBy" 
+            ng-style="valiin(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> 
+            {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}
+          </td>
+        </tr>
+
+        <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
+          <td>{{x.nop}}</td>
+          <td>{{x.nimi}}</td>
+          <td style="font-size:78%;"
+            ng-repeat="ta in ajat | orderBy:myOrderBy" 
+            ng-style="valiin(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')">
+            {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}}
+          </td>
+        </tr>
+
+        </table>
+    </div>
+    
+
+<div ng-switch-when="0">
+    <table border="1" width="100%">
+      <tr>
+      <th ng-click="orderByMe('name')">Nopeus</th>
+      <th ng-click="orderByMe('name')">Yksikot</th>
+      <th ng-repeat="y in ajat | orderBy:myOrderBy"> TA{{y.areena}}</th>
+      </tr>
+      <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
+      <td>{{x.name}}</td>
+      <td>{{x.unit}}</td>
+      <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd, 0),osuma(vikamahd, 0), 0)"> {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
+      </tr>
+
+      <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
+      <td>{{x.nop}}</td>
+      <td>{{x.nimi}}</td>
+      <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd, 0),osuma(vikamahd, 0),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
+      </tr>
+
+      </table>
+</div>
+
+
+   </div>
+  </div>
+<script>
+angular.module('myApp', []).controller('namesCtrl', function($scope) {
+    $scope.kartanLeveys = 401;
+    $scope.fakti = 1
+
+    $scope.piilotus = "1"
+    
+    $scope.koti_X = 0;
+    $scope.koti_Y = 0;
+    $scope.kohde_X = 0;
+    $scope.kohde_Y = 0;
+    $scope.taBuusti = 0.2;
+
+    var nyt = (Math.round(Date.now()/1000/60) - 5)*1000*60
+    $scope.aika = new Date((Math.round(Date.now()/1000/60/60/24)*24+34)*60*60*1000)
+    $scope.ekamahd = new Date((Math.round(Date.now()/1000/60) - 20)*1000*60)
+    $scope.vikamahd = new Date((Math.round(Date.now()/1000)*1000))
+
+    $scope.Math = window.Math;
+
+    $scope.etaisyys = function(kx1, ky1, kx2, ky2, kartanSivu) {
+      const x1 = kx1 || 0;
+      const x2 = kx2 || 0;
+      const y1 = ky1 || 0;
+      const y2 = ky2 || 0;
+      const sivunLeveys = kartanSivu || 401;
+      const xEtaisyys = Math.min(Math.abs(x1-x2), sivunLeveys - Math.abs(x1-x2));
+      const yEtaisyys = Math.min(Math.abs(y1-y2), sivunLeveys - Math.abs(y1-y2));
+      return Math.sqrt(Math.pow(xEtaisyys, 2) + Math.pow(yEtaisyys, 2) );
+    }
+
+    $scope.getDistance = function() {
+      const x1 = $scope.koti_X || 0;
+      const y1 = $scope.koti_Y || 0;
+      const x2 = $scope.kohde_X || 0;
+      const y2 = $scope.kohde_Y || 0;
+
+      const sivunLeveys = $scope.kartanLeveys || 401;
+      const xEtaisyys = Math.min(Math.abs(x1-x2), sivunLeveys - Math.abs(x1-x2));
+      const yEtaisyys = Math.min(Math.abs(y1-y2), sivunLeveys - Math.abs(y1-y2));
+      return Math.sqrt(Math.pow(xEtaisyys, 2) + Math.pow(yEtaisyys, 2) );
+    }
+
+    $scope.matkaAika = function(etaisyys, nopeus, fakti, ta, kengat) {
+      const perusNopeus = nopeus*fakti;
+      const taNopeus = (nopeus*fakti)*(1+$scope.taBuusti*ta+kengat);
+      let kesto = 0;
+
+      if (etaisyys > 20) {
+        kesto = 20/perusNopeus + (etaisyys-20)/taNopeus;
+      } else {
+        kesto = etaisyys/perusNopeus;
+      }
+
+      return kesto;
+    }
+
+    $scope.erotus = function(alku, loppu){
+      return alku+loppu;
+    }
+
+    $scope.osuma = function(aika, matka, kutsuja) {
+      var ms = matka * 60 * 60 * 1000;
+      if ( angular.isDate(aika) ) {
+        return new Date(aika.getTime() - ms);
+      }
+      return "-"
+    }
+
+    $scope.osumaa = function(aika, matka) {
+      var ms = matka * 60 * 60 * 1000;
+      if ( angular.isDate(aika) ) {
+        return new Date(aika.getTime() - ms)
+      }
+      return "-"
+    }
+
+    $scope.valiinvain = function(osuma, eka, vika, piilo) {
+      if ( osuma < vika ) {
+          if ( osuma > eka ) {
+            return { "background-color": "indianred", 'font-weight': 'bold'}
+          } else if ( osuma  > ( eka - 5*60*1000) ) {
+            return { "background-color": "lightblue", 'font-weight': 'bold'}
+          }
+			}
+			if ( piilo = "1" ) {
+        return { color: "black"}
+      } else {
+        return { color: "black"}
+      }
+      return { color: "black"}
+    }
+
+    $scope.valiin = function(osuma, eka, vika, piilo) {
+      // console.log(`valiin: (osuma: ${osuma}), (eka: ${eka}), (vika: ${vika}), (piilo: ${piilo}), `)
+
+      if ( osuma < vika ) {
+          if ( osuma > eka ) {
+            return { "background-color": "indianred", 'font-weight': 'bold'}
+          } else if ( osuma  > ( eka - 5*60*1000) ) {
+            return { "background-color": "lightblue", 'font-weight': 'bold'}
+          }
+			}
+			if ( piilo = "1" ) {
+        return { color: "white"}
+      } else {
+        return { color: "black"}
+      }
+      return { color: "black"}
+    }
+
+    $scope.yksikot = [
+        {name:3, unit:'Cata'},
+        {name:4, unit:'Ram, Chief, Senator'},
+        {name:5, unit:'Pret, Chieftain'},
+        {name:6, unit:'Legionaire, Sword, Axe'},
+        {name:7, unit:'Imperian, Phalanx, Club, Spear'},
+        {name:9, unit:'Scout, TK'},
+        {name:10, unit:'EC, Paladin'},
+        {name:13, unit:'Haeduan'},
+        {name:14, unit:'EI'},
+        {name:16, unit:'Druid, Legati'},
+        {name:17, unit:'Pathfinder'},
+        {name:19, unit:'Thunder'},
+        ];
+    $scope.orderByMe = function(x) {
+        $scope.myOrderBy = x;
+    }
+
+    $scope.kengatt = [
+        {nop:3,nimi:'Cata+25%-boots',kenka:0.25},
+        {nop:3,nimi:'Cata+50%-boots',kenka:0.50},
+        {nop:3,nimi:'Cata+75%-boots',kenka:0.75},
+        {nop:4,nimi:'Ram+25%-boots',kenka:0.25},
+        {nop:4,nimi:'Ram+50%-boots',kenka:0.50},
+        {nop:4,nimi:'Ram+75%-boots',kenka:0.75}
+        ];
+
+    $scope.ajat = [
+        {areena:0},
+        {areena:1},
+        {areena:2},
+        {areena:3},
+        {areena:4},
+        {areena:5},
+        {areena:6},
+        {areena:7},
+        {areena:8},
+        {areena:9},
+        {areena:10},
+        {areena:11},
+        {areena:12},
+        {areena:13},
+        {areena:14},
+        {areena:15},
+        {areena:16},
+        {areena:17},
+        {areena:18},
+        {areena:19},
+        {areena:20}
+        ];
+    $scope.orderByMe = function(x) {
+        $scope.myOrderBy = x;
+    }
+});
+</script>
+
+</body>
+</html>
