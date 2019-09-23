@@ -44,8 +44,8 @@ td:hover{
   <input type="number" style="width:60px" ng-model="kartanLeveys"/><span>Kartan leveys</span>
   <form action="" >
     Turnausareenan nopeus per taso
-    <input type="radio" ng-model="taBuusti" value="10" > 10%
-    <input type="radio" ng-model="taBuusti" value="5"> 20%
+    <input type="radio" ng-model="taBuusti" value="0.1" > 10%
+    <input type="radio" ng-model="taBuusti" value="0.2"> 20%
   </form> </p>
 
   <p><input type="number" style="width:50px" ng-model="kohde_X"/><input type="number"  style="width:50px" ng-model="kohde_Y"/>  <span>Hyökkääjä X|Y</span></p>
@@ -71,20 +71,28 @@ td:hover{
 
         <table border="1" width="100%">
         <tr>
-        <th ng-click="orderByMe('name')">Nopeus</th>
-        <th ng-click="orderByMe('name')">Yksikot</th>
-        <th ng-repeat="y in ajat | orderBy:myOrderBy"> TA{{y.areena}}</th>
+          <th ng-click="orderByMe('name')">Nopeus</th>
+          <th ng-click="orderByMe('name')">Yksikot</th>
+          <th ng-repeat="y in ajat | orderBy:myOrderBy"> TA{{y.areena}}</th>
         </tr>
         <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
-        <td>{{x.name}}</td>
-        <td>{{x.unit}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
+          <td>{{x.name}}</td>
+          <td>{{x.unit}}</td>
+          <td style="font-size:78%;" 
+            ng-repeat="ta in ajat | orderBy:myOrderBy" 
+            ng-style="valiin(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> 
+            {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}
+          </td>
         </tr>
 
         <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
-        <td>{{x.nop}}</td>
-        <td>{{x.nimi}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiin(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
+          <td>{{x.nop}}</td>
+          <td>{{x.nimi}}</td>
+          <td style="font-size:78%;"
+            ng-repeat="ta in ajat | orderBy:myOrderBy" 
+            ng-style="valiin(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd,'0'),osuma(vikamahd,'0'),'0')">
+            {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}}
+          </td>
         </tr>
 
         </table>
@@ -92,25 +100,25 @@ td:hover{
     
 
 <div ng-switch-when="0">
-      <table border="1" width="100%">
-        <tr>
-        <th ng-click="orderByMe('name')">Nopeus</th>
-        <th ng-click="orderByMe('name')">Yksikot</th>
-        <th ng-repeat="y in ajat | orderBy:myOrderBy"> TA{{y.areena}}</th>
-        </tr>
-        <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
-        <td>{{x.name}}</td>
-        <td>{{x.unit}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd, 0),osuma(vikamahd, 0), 0)"> {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
-        </tr>
+    <table border="1" width="100%">
+      <tr>
+      <th ng-click="orderByMe('name')">Nopeus</th>
+      <th ng-click="orderByMe('name')">Yksikot</th>
+      <th ng-repeat="y in ajat | orderBy:myOrderBy"> TA{{y.areena}}</th>
+      </tr>
+      <tr ng-repeat="x in yksikot | orderBy:myOrderBy">
+      <td>{{x.name}}</td>
+      <td>{{x.unit}}</td>
+      <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)),osuma(ekamahd, 0),osuma(vikamahd, 0), 0)"> {{osumaa(aika,matkaAika(getDistance(), x.name, fakti, ta.areena, kengat)) | date:'dd.M HH:mm:ss'}}</td>
+      </tr>
 
-        <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
-        <td>{{x.nop}}</td>
-        <td>{{x.nimi}}</td>
-        <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd, 0),osuma(vikamahd, 0),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
-        </tr>
+      <tr ng-repeat="x in kengatt | orderBy:myOrderBy">
+      <td>{{x.nop}}</td>
+      <td>{{x.nimi}}</td>
+      <td style="font-size:78%;" ng-repeat="ta in ajat | orderBy:myOrderBy" ng-style="valiinvain(osuma(aika, matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)),osuma(ekamahd, 0),osuma(vikamahd, 0),'0')"> {{osumaa(aika,matkaAika(getDistance(), x.nop, fakti, ta.areena, x.kenka)) | date:'dd.M HH:mm:ss'}} </td>
+      </tr>
 
-        </table>
+      </table>
 </div>
 
 
@@ -119,15 +127,15 @@ td:hover{
 <script>
 angular.module('myApp', []).controller('namesCtrl', function($scope) {
     $scope.kartanLeveys = 401;
-    //$scope.fakti = "1"
+    $scope.fakti = 1
 
     $scope.piilotus = "1"
-    $scope.HXLen = "4"
+    
     $scope.koti_X = 0;
     $scope.koti_Y = 0;
     $scope.kohde_X = 0;
     $scope.kohde_Y = 0;
-    $scope.taBuusti = 10;
+    $scope.taBuusti = 0.2;
 
     var nyt = (Math.round(Date.now()/1000/60) - 5)*1000*60
     $scope.aika = new Date((Math.round(Date.now()/1000/60/60/24)*24+34)*60*60*1000)
@@ -161,7 +169,7 @@ angular.module('myApp', []).controller('namesCtrl', function($scope) {
 
     $scope.matkaAika = function(etaisyys, nopeus, fakti, ta, kengat) {
       const perusNopeus = nopeus*fakti;
-      const taNopeus = (nopeus*fakti)*(1+$scope.taBuusti/10+kengat);
+      const taNopeus = (nopeus*fakti)*(1+$scope.taBuusti*ta+kengat);
       let kesto = 0;
 
       if (etaisyys > 20) {
